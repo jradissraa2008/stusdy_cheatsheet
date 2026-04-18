@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Nunito:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #fdf0f5;
+    min-height: 100vh;
+    padding: 28px 18px 60px;
+    color: #2e1a24;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, #fbc8dc 0%, transparent 65%);
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -60px; left: -60px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, #d4c5f7 0%, transparent 65%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; }
+
+  .header { text-align: center; margin-bottom: 30px; }
+  .header .pill {
+    display: inline-block;
+    font-size: 10.5px; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: #a04070; background: #fad5e8;
+    padding: 4px 16px; border-radius: 20px; margin-bottom: 10px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem; color: #1e0f1a;
+    line-height: 1.1;
+  }
+  .header h1 em { color: #b84080; font-style: italic; }
+  .header p { margin-top: 7px; font-size: 12.5px; color: #8a5070; font-weight: 300; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 8px; margin-bottom: 18px; justify-content: center; flex-wrap: wrap; }
+  .tab {
+    padding: 7px 18px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    cursor: pointer; border: 2px solid transparent; transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .tab.active { background: #b84080; color: white; border-color: #b84080; }
+  .tab:not(.active) { background: white; color: #b84080; border-color: #e8c0d4; }
+  .tab:not(.active):hover { background: #fce8f2; }
+
+  /* Sections */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Grid */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* Cards */
+  .card {
+    background: white; border-radius: 16px;
+    padding: 18px 20px; border: 1.5px solid #f0d0e0;
+    box-shadow: 0 3px 16px rgba(180,60,100,0.06);
+    transition: transform 0.18s, box-shadow 0.18s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 7px 24px rgba(180,60,100,0.11); }
+  .card.wide { grid-column: span 2; }
+  .card.lavender { border-color: #d0c0f0; background: linear-gradient(135deg,#f8f4ff,#fff); }
+  .card.peach { border-color: #f0d4b0; background: linear-gradient(135deg,#fff8f0,#fff); }
+  .card.rose { border-color: #f0c0d0; background: linear-gradient(135deg,#fff2f6,#fff); }
+  .card.mint { border-color: #b0ddd0; background: linear-gradient(135deg,#f0faf8,#fff); }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem; color: #1e0f1a;
+    margin-bottom: 13px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dp { background: #c060a0; }
+  .dl { background: #8060d0; }
+  .dm { background: #50a888; }
+  .do { background: #d08040; }
+
+  .lbl { font-size: 9.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #c060a0; margin-bottom: 3px; }
+  .lbl.lv { color: #7050c0; }
+  .lbl.lm { color: #40907a; }
+  .lbl.lo { color: #b06030; }
+
+  code, .blk {
+    display: block;
+    font-family: 'Fira Code', monospace;
+    font-size: 11px; line-height: 1.75;
+    background: #fdf4f8; border: 1px solid #f0d5e5;
+    border-radius: 8px; padding: 8px 12px;
+    color: #2e1a24; margin-bottom: 9px;
+    white-space: pre-wrap;
+  }
+  .blk.lavender { background: #f8f4ff; border-color: #d8c8f5; }
+  .blk.mint { background: #f0faf8; border-color: #a8d8cc; }
+  .blk.peach { background: #fff8f0; border-color: #e8c898; }
+
+  .kw { color: #b84080; font-weight: 600; }
+  .fn { color: #7050c0; }
+  .st { color: #408060; }
+  .cm { color: #a08090; font-style: italic; }
+  .nm { color: #b06830; }
+  .op { color: #c04040; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  th { background: #fce8f2; color: #b84080; font-weight: 700; font-size: 9.5px;
+       letter-spacing: 0.8px; text-transform: uppercase; padding: 6px 10px; text-align: left; }
+  td { padding: 5px 10px; border-bottom: 1px solid #f5e5ee; font-family: 'Fira Code', monospace; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #fdf8fb; }
+
+  /* Badge strip */
+  .badges { display: flex; flex-wrap: wrap; gap: 7px; }
+  .b {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 3px 10px; border-radius: 12px; letter-spacing: 0.3px;
+  }
+  .bp { background: #fce8f2; color: #b84080; }
+  .bl { background: #ece4ff; color: #6840c0; }
+  .bm { background: #e0f5f0; color: #308060; }
+  .bo { background: #fde8d4; color: #a05820; }
+
+  .row { margin-bottom: 10px; }
+
+  .footer { text-align:center; margin-top:28px; font-size:11px; color:#b090a0; }
+  .footer span { color: #d06090; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="pill">✦ 3SI Informatique — Séances Almourabi ✦</div>
+    <h1>Python & <em>Algorithmes</em></h1>
+    <p>Approximations · Enregistrements · Interface graphique PyQt5 🌸</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="show('approx',this)">📐 Approximations</div>
+    <div class="tab" onclick="show('enreg',this)">📋 Enregistrements</div>
+    <div class="tab" onclick="show('pyqt',this)">🖼️ PyQt5 Interface</div>
+    <div class="tab" onclick="show('crypto',this)">🔐 Cryptage</div>
+    <div class="tab" onclick="show('tips',this)">💡 Astuces clés</div>
+  </div>
+
+  <!-- APPROXIMATIONS -->
+  <div class="section active" id="approx">
+    <div class="grid">
+      <div class="card rose">
+        <div class="card-title"><span class="dot dp"></span>Idée générale — Approximation</div>
+        <div class="row"><div class="lbl">Principe</div>
+        <code>On calcule terme par terme
+<span class="cm"># On s'arrête quand |V2 - V1| &lt; epsilon</span>
+<span class="cm"># V1 = terme précédent, V2 = terme courant</span></code></div>
+        <div class="row"><div class="lbl">Structure type</div>
+        <code><span class="kw">sig</span> = -<span class="nm">1</span>   <span class="cm"># signe alterné</span>
+<span class="kw">v2</span> = <span class="nm">1</span>   <span class="cm"># valeur courante</span>
+<span class="kw">v1</span> = <span class="nm">0</span>   <span class="cm"># valeur précédente</span>
+<span class="kw">i</span>  = <span class="nm">2</span>   <span class="cm"># exposant départ (pair)</span>
+<span class="kw">while</span> <span class="fn">abs</span>(v2 - v1) >= epsilon:
+    v1 = v2
+    v2 = v2 + <span class="fn">terme</span>(x,i) * sig
+    i += <span class="nm">2</span>
+    sig = -sig</code></div>
+      </div>
+
+      <div class="card lavender">
+        <div class="card-title"><span class="dot dl"></span>Exercice 1 — Cos(x)</div>
+        <div class="row"><div class="lbl lv">Formule</div>
+        <code class="lavender">Cos(x) = 1 - x²/2! + x⁴/4! - x⁶/6! + …
+<span class="cm"># terme(i) = x^i / fact(i) * sig</span></code></div>
+        <div class="row"><div class="lbl lv">Code Python</div>
+        <code class="lavender"><span class="kw">def</span> <span class="fn">calcul_cos</span>(x):
+    sig=-<span class="nm">1</span>; v2=<span class="nm">1</span>; i=<span class="nm">2</span>; v1=<span class="nm">0</span>
+    <span class="kw">while</span> <span class="fn">abs</span>(v2-v1) >= <span class="nm">0.0001</span>:
+        v1 = v2
+        v2 = v2 + (<span class="fn">puis</span>(x,i)/<span class="fn">fact</span>(i))*sig
+        i += <span class="nm">2</span>; sig = -sig
+    <span class="fn">print</span>(<span class="st">"cos("</span>,x,<span class="st">")="</span>,v1)</code></div>
+        <div class="row"><div class="lbl lv">Fonctions auxiliaires</div>
+        <code class="lavender"><span class="kw">def</span> <span class="fn">puis</span>(a,b): <span class="cm"># a^b</span>
+    p=<span class="nm">1</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>,b+<span class="nm">1</span>): p=p*a
+    <span class="kw">return</span> p
+
+<span class="kw">def</span> <span class="fn">fact</span>(x): <span class="cm"># x!</span>
+    f=<span class="nm">1</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>,x+<span class="nm">1</span>): f=f*i
+    <span class="kw">return</span> f</code></div>
+      </div>
+
+      <div class="card peach wide">
+        <div class="card-title"><span class="dot do"></span>Exercice 2 — Constante K</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div>
+            <div class="lbl lo">Formule</div>
+            <code class="peach">K = Σ (-1)ⁿ / (2n+1)²
+  = 1 - 1/9 + 1/25 - 1/49 + …
+<span class="cm"># terme(n) = 1/(i*i), i = 1,3,5,7,...</span>
+<span class="cm"># epsilon : 0.01 ≤ eps ≤ 0.00001</span></code>
+            <div class="lbl lo" style="margin-top:8px;">Saisie epsilon</div>
+            <code class="peach"><span class="kw">def</span> <span class="fn">saisie</span>():
+    eps=<span class="fn">float</span>(<span class="fn">input</span>(<span class="st">"eps="</span>))
+    <span class="kw">while not</span> (<span class="nm">0.00001</span>&lt;=eps&lt;=<span class="nm">0.01</span>):
+        eps=<span class="fn">float</span>(<span class="fn">input</span>(<span class="st">"eps="</span>))
+    <span class="kw">return</span> eps</code>
+          </div>
+          <div>
+            <div class="lbl lo">Calcul K</div>
+            <code class="peach"><span class="kw">def</span> <span class="fn">calcul_k</span>(eps):
+    v2=<span class="nm">1</span>; v1=<span class="nm">0</span>
+    sig=-<span class="nm">1</span>; i=<span class="nm">3</span>
+    <span class="kw">while</span> <span class="fn">abs</span>(v2-v1)&gt;=eps:
+        v1=v2
+        v2=v2+(<span class="nm">1</span>/(i*i))*sig
+        sig=-sig
+        i+=<span class="nm">2</span>
+    <span class="fn">print</span>(<span class="st">"K="</span>,v1)</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENREGISTREMENTS -->
+  <div class="section" id="enreg">
+    <div class="grid">
+      <div class="card rose wide">
+        <div class="card-title"><span class="dot dp"></span>Structure Enregistrement (dict en Python)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div>
+            <div class="lbl">Définir un enregistrement</div>
+            <code><span class="cm"># Algorithme (TDNT)</span>
+Type
+  Date = enregistrement
+    j, m, aa : entier
+  fin
+  emp = enregistrement
+    np : chaîne
+    dnais : Date
+    gr : chaîne
+    am : caractère
+  fin
+tab = tableau de 120 emp</code>
+          </div>
+          <div>
+            <div class="lbl">Python — dict</div>
+            <code><span class="cm"># En Python = dictionnaire</span>
+t[i] = <span class="fn">dict</span>()
+t[i][<span class="st">"np"</span>] = <span class="fn">input</span>(<span class="st">"nom:"</span>)
+t[i][<span class="st">"dnais"</span>] = <span class="fn">dict</span>()
+t[i][<span class="st">"dnais"</span>][<span class="st">"j"</span>] = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"jour:"</span>))
+t[i][<span class="st">"dnais"</span>][<span class="st">"m"</span>] = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"mois:"</span>))
+t[i][<span class="st">"dnais"</span>][<span class="st">"aa"</span>] = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"année:"</span>))
+t[i][<span class="st">"gr"</span>] = <span class="fn">input</span>(<span class="st">"grade:"</span>)
+t[i][<span class="st">"am"</span>] = <span class="fn">input</span>(<span class="st">"assuré?:"</span>)</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="card lavender">
+        <div class="card-title"><span class="dot dl"></span>Remplir + Contraintes</div>
+        <div class="lbl lv">Saisie avec validation</div>
+        <code class="lavender"><span class="kw">while not</span> (<span class="st">"A"</span>&lt;=t[i][<span class="st">"np"</span>][<span class="nm">0</span>]&lt;=<span class="st">"Z"</span> <span class="kw">and</span>
+           <span class="fn">verif</span>(t[i][<span class="st">"np"</span>])):
+    t[i][<span class="st">"np"</span>]=<span class="fn">input</span>(<span class="st">"nom:"</span>)
+
+<span class="kw">while not</span> <span class="nm">1</span>&lt;=t[i][<span class="st">"dnais"</span>][<span class="st">"j"</span>]&lt;=<span class="nm">31</span>:
+    t[i][<span class="st">"dnais"</span>][<span class="st">"j"</span>]=<span class="fn">int</span>(<span class="fn">input</span>(...))
+
+<span class="kw">while not</span> t[i][<span class="st">"gr"</span>] <span class="kw">in</span> [<span class="st">"G1"</span>,<span class="st">"G2"</span>,<span class="st">"G3"</span>,<span class="st">"G4"</span>]:
+    t[i][<span class="st">"gr"</span>]=<span class="fn">input</span>(<span class="st">"grade:"</span>)
+
+<span class="kw">while not</span> t[i][<span class="st">"am"</span>][<span class="nm">0</span>] <span class="kw">in</span> [<span class="st">"O"</span>,<span class="st">"N"</span>]:
+    t[i][<span class="st">"am"</span>]=<span class="fn">input</span>(<span class="st">"assuré?:"</span>)</code>
+      </div>
+
+      <div class="card mint">
+        <div class="card-title"><span class="dot dm"></span>Afficher + Trier (bulle)</div>
+        <div class="lbl lm">Compter assurés</div>
+        <code class="mint">nb=<span class="nm">0</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n):
+    <span class="kw">if</span> t[i][<span class="st">"am"</span>]==<span class="st">"O"</span>: nb+=<span class="nm">1</span>
+<span class="fn">print</span>(<span class="st">"nb assurés:"</span>,nb,
+      <span class="st">"%:"</span>,(nb/n)*<span class="nm">100</span>)</code>
+        <div class="lbl lm" style="margin-top:8px;">Tri bulle décroissant (année)</div>
+        <code class="mint">echange=<span class="op">True</span>
+<span class="kw">while</span> echange:
+    echange=<span class="op">False</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n-<span class="nm">1</span>):
+        <span class="kw">if</span> t[i][<span class="st">"dnais"</span>][<span class="st">"aa"</span>] &lt; t[i+<span class="nm">1</span>][<span class="st">"dnais"</span>][<span class="st">"aa"</span>]:
+            aux=t[i]; t[i]=t[i+<span class="nm">1</span>]
+            t[i+<span class="nm">1</span>]=aux; echange=<span class="op">True</span></code>
+      </div>
+
+      <div class="card rose">
+        <div class="card-title"><span class="dot dp"></span>Fonction verif (chaîne valide)</div>
+        <code><span class="kw">def</span> <span class="fn">verif</span>(ch):
+    i=<span class="nm">1</span>
+    <span class="kw">while</span> i&lt;<span class="fn">len</span>(ch) <span class="kw">and</span> (
+      <span class="st">"a"</span>&lt;=ch[i]&lt;=<span class="st">"z"</span> <span class="kw">or</span> ch[i]==<span class="st">" "</span>):
+        i=i+<span class="nm">1</span>
+    <span class="kw">return</span> i==<span class="fn">len</span>(ch)
+<span class="cm"># Vérifie: minuscules ou espaces sauf [0]</span></code>
+      </div>
+    </div>
+  </div>
+
+  <!-- PYQT5 -->
+  <div class="section" id="pyqt">
+    <div class="grid">
+      <div class="card rose wide">
+        <div class="card-title"><span class="dot dp"></span>Structure de base PyQt5</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div>
+            <div class="lbl">Imports obligatoires</div>
+            <code><span class="kw">from</span> PyQt5.uic <span class="kw">import</span> loadUi
+<span class="kw">from</span> PyQt5.QtWidgets <span class="kw">import</span> (
+    QApplication, QMessageBox,
+    QTableWidget, QTableWidgetItem
+)</code>
+            <div class="lbl" style="margin-top:8px;">Lancer l'interface</div>
+            <code>app = <span class="fn">QApplication</span>([])
+w = <span class="fn">loadUi</span>(<span class="st">"fichier.ui"</span>)
+w.<span class="fn">show</span>()
+app.<span class="fn">exec_</span>()</code>
+          </div>
+          <div>
+            <div class="lbl">Connecter les boutons</div>
+            <code><span class="cm"># bouton → module</span>
+w.b1.clicked.<span class="fn">connect</span>(play)
+w.b2.clicked.<span class="fn">connect</span>(effacer)
+w.b3.clicked.<span class="fn">connect</span>(fermer)</code>
+            <div class="lbl" style="margin-top:8px;">Lire / Écrire</div>
+            <code><span class="cm"># Lire zone de saisie</span>
+ch = w.s.<span class="fn">text</span>()
+
+<span class="cm"># Écrire dans un label</span>
+w.r.<span class="fn">setText</span>(<span class="st">"résultat: "</span>+str(r))
+
+<span class="cm"># Effacer</span>
+w.s.<span class="fn">clear</span>(); w.r.<span class="fn">clear</span>()
+w.s.<span class="fn">setFocus</span>()</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="card lavender">
+        <div class="card-title"><span class="dot dl"></span>Modules standards</div>
+        <div class="lbl lv">Play (Vérifier bouton)</div>
+        <code class="lavender"><span class="kw">def</span> <span class="fn">play</span>():
+    ch = w.s.<span class="fn">text</span>()
+    <span class="kw">if not</span> (condition_valide):
+        QMessageBox.<span class="fn">critical</span>(
+            w, <span class="st">"erreur"</span>, <span class="st">"saisie incorrecte"</span>)
+    <span class="kw">elif</span> <span class="fn">verif</span>(ch):
+        w.r.<span class="fn">setText</span>(<span class="st">"résultat: "</span>+...)
+    <span class="kw">else</span>:
+        w.r.<span class="fn">setText</span>(<span class="st">"non valide"</span>)</code>
+        <div class="lbl lv" style="margin-top:8px;">Recommencer / Fermer</div>
+        <code class="lavender"><span class="kw">def</span> <span class="fn">recommencer</span>():
+    w.s.<span class="fn">clear</span>(); w.r.<span class="fn">clear</span>()
+    w.s.<span class="fn">setFocus</span>()
+
+<span class="kw">def</span> <span class="fn">fermer</span>():
+    w.<span class="fn">close</span>()</code>
+      </div>
+
+      <div class="card peach">
+        <div class="card-title"><span class="dot do"></span>Ex. Nombre Porte-bonheur</div>
+        <div class="lbl lo">Définition</div>
+        <div style="background:#fff8f0;border:1px solid #e8c898;border-radius:8px;padding:8px 12px;font-size:11.5px;margin-bottom:9px;line-height:1.6;">
+          Chiffres forment une <strong>suite arithmétique</strong> de raison r<br>
+          <span style="color:#a05820;">1357</span> → r=+2 ✅ | <span style="color:#a05820;">9630</span> → r=-3 ✅ | <span style="color:#c04040;">6427</span> → ❌
+        </div>
+        <div class="lbl lo">Fonction verif</div>
+        <code class="peach">r=<span class="fn">int</span>(ch[<span class="nm">1</span>])-<span class="fn">int</span>(ch[<span class="nm">0</span>])
+test=<span class="op">True</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">2</span>,<span class="fn">len</span>(ch)):
+    <span class="kw">if</span> <span class="fn">int</span>(ch[i])-<span class="fn">int</span>(ch[i-<span class="nm">1</span>])!=r:
+        test=<span class="op">False</span>
+<span class="kw">return</span> test</code>
+        <div class="lbl lo" style="margin-top:8px;">Affichage</div>
+        <code class="peach">w.r.<span class="fn">setText</span>(ch+<span class="st">" est un nombre porte
+bonheur\ncar il forme une suite
+arithmétique de raison "</span>+<span class="fn">str</span>(r))</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRYPTAGE -->
+  <div class="section" id="crypto">
+    <div class="grid">
+      <div class="card rose wide">
+        <div class="card-title"><span class="dot dp"></span>Exercice Cryptage — Principe</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div>
+            <div class="lbl">Fonctionnement</div>
+            <div style="background:#fff2f6;border:1px solid #f0c0d0;border-radius:8px;padding:10px 12px;font-size:11.5px;line-height:1.7;margin-bottom:9px;">
+              1. Saisir MOT (majuscules, ≤25 chars)<br>
+              2. Tableau T aléatoire (1..25), taille = len(MOT)<br>
+              3. Remplacer chaque lettre par +p positions<br>
+              4. Si dépassé 'Z' → revenir à 'A' (modulo)<br>
+              5. Trier la chaine résultat alphabétiquement
+            </div>
+            <div class="lbl">Exemple SALUT</div>
+            <table>
+              <thead><tr><th>Lettre</th><th>+p</th><th>Résultat</th></tr></thead>
+              <tbody>
+                <tr><td>S</td><td>+19</td><td>L</td></tr>
+                <tr><td>A</td><td>+3</td><td>D</td></tr>
+                <tr><td>L</td><td>+7</td><td>S</td></tr>
+                <tr><td>U</td><td>+18</td><td>M</td></tr>
+                <tr><td>T</td><td>+15</td><td>I</td></tr>
+              </tbody>
+            </table>
+            <div style="margin-top:8px;font-size:11.5px;color:#8a5070;">LDSMI → trié → <strong>DILMS</strong></div>
+          </div>
+          <div>
+            <div class="lbl">Fonction crypter</div>
+            <code><span class="kw">def</span> <span class="fn">crypter</span>(ch):
+    n=<span class="fn">len</span>(ch)
+    t=<span class="fn">array</span>([<span class="fn">int</span>()]*n)
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n):
+        t[i]=<span class="fn">randint</span>(<span class="nm">1</span>,<span class="nm">25</span>)
+    ch1=<span class="st">""</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n):
+        <span class="kw">if</span> <span class="fn">ord</span>(ch[i])+t[i]&gt;<span class="nm">90</span>:
+            ch1+=<span class="fn">chr</span>(<span class="fn">ord</span>(ch[i])+t[i]-<span class="nm">26</span>)
+        <span class="kw">else</span>:
+            ch1+=<span class="fn">chr</span>(<span class="fn">ord</span>(ch[i])+t[i])
+    ch1=<span class="fn">tri</span>(ch1)
+    <span class="kw">return</span> ch1</code>
+            <div class="lbl" style="margin-top:8px;">ASCII à retenir</div>
+            <div style="background:#fff2f6;border:1px solid #f0c0d0;border-radius:8px;padding:8px 12px;font-size:11px;">
+              <code style="background:none;border:none;padding:0;"><span class="st">'A'</span> = <span class="nm">65</span> | <span class="st">'Z'</span> = <span class="nm">90</span>
+<span class="fn">ord</span>(<span class="st">'A'</span>) = <span class="nm">65</span>
+<span class="fn">chr</span>(<span class="nm">65</span>) = <span class="st">'A'</span>
+Si ord(lettre)+p > 90 → -26 (retour A)</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mint wide">
+        <div class="card-title"><span class="dot dm"></span>Tri bulle sur chaîne + Verif chaîne</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div>
+            <div class="lbl lm">Tri à bulles sur chaîne</div>
+            <code class="mint"><span class="kw">def</span> <span class="fn">tri</span>(ch):
+    echange=<span class="op">True</span>
+    <span class="kw">while</span> echange:
+        echange=<span class="op">False</span>
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(ch)-<span class="nm">1</span>):
+            <span class="kw">if</span> ch[i]&gt;ch[i+<span class="nm">1</span>]:
+                ch=ch[:i]+ch[i+<span class="nm">1</span>]+ch[i]+ch[i+<span class="nm">2</span>:]
+                echange=<span class="op">True</span>
+    <span class="kw">return</span> ch</code>
+          </div>
+          <div>
+            <div class="lbl lm">Verif (que majuscules)</div>
+            <code class="mint"><span class="kw">def</span> <span class="fn">verif</span>(ch):
+    i=<span class="nm">0</span>
+    <span class="kw">while</span> i&lt;<span class="fn">len</span>(ch) <span class="kw">and</span>
+          <span class="st">"A"</span>&lt;=ch[i]&lt;=<span class="st">"Z"</span>:
+        i=i+<span class="nm">1</span>
+    <span class="kw">return</span> i==<span class="fn">len</span>(ch)
+<span class="cm"># Contrainte: 1 ≤ len(ch) ≤ 25</span></code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIPS -->
+  <div class="section" id="tips">
+    <div class="grid">
+      <div class="card rose">
+        <div class="card-title"><span class="dot dp"></span>Boucles de saisie contrôlée</div>
+        <div class="lbl">Répéter … jusqu'à (algo)</div>
+        <code>répéter
+    lire(x)
+jusqu'à condition_valide</code>
+        <div class="lbl" style="margin-top:8px;">Équivalent Python</div>
+        <code>x = <span class="fn">float</span>(<span class="fn">input</span>(<span class="st">"x="</span>))
+<span class="kw">while not</span> condition_valide:
+    x = <span class="fn">float</span>(<span class="fn">input</span>(<span class="st">"x="</span>))</code>
+        <div class="lbl" style="margin-top:8px;">Tant que (algo)</div>
+        <code>tant que condition faire
+    …
+fin tant que
+
+<span class="cm"># Python → while condition:</span></code>
+      </div>
+
+      <div class="card lavender">
+        <div class="card-title"><span class="dot dl"></span>Fonctions utiles à retenir</div>
+        <table>
+          <thead><tr><th>Fonction</th><th>Usage</th></tr></thead>
+          <tbody>
+            <tr><td>abs(x)</td><td>valeur absolue</td></tr>
+            <tr><td>len(ch)</td><td>longueur chaîne</td></tr>
+            <tr><td>ord(c)</td><td>code ASCII de c</td></tr>
+            <tr><td>chr(n)</td><td>caractère du code n</td></tr>
+            <tr><td>int(s)</td><td>convertir en entier</td></tr>
+            <tr><td>float(s)</td><td>convertir en réel</td></tr>
+            <tr><td>str(n)</td><td>convertir en chaîne</td></tr>
+            <tr><td>randint(a,b)</td><td>entier aléatoire [a,b]</td></tr>
+            <tr><td>range(n)</td><td>0 à n-1</td></tr>
+            <tr><td>range(a,b)</td><td>a à b-1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card mint wide">
+        <div class="card-title"><span class="dot dm"></span>Rappels clés — à mémoriser 🎀</div>
+        <div class="badges">
+          <span class="b bp">|V2-V1| &lt; ε → arrêt approximation</span>
+          <span class="b bl">sig = -sig → alternance signe</span>
+          <span class="b bm">i += 2 → termes pairs/impairs</span>
+          <span class="b bo">ord+p &gt; 90 → soustraire 26</span>
+          <span class="b bp">dict() = enregistrement Python</span>
+          <span class="b bl">w.s.text() → lire champ QT</span>
+          <span class="b bm">w.r.setText() → écrire label QT</span>
+          <span class="b bo">QMessageBox.critical() → alerte</span>
+          <span class="b bp">clicked.connect(module) → bouton</span>
+          <span class="b bl">loadUi("f.ui") → charger interface</span>
+          <span class="b bm">echange=True → tri à bulles actif</span>
+          <span class="b bo">ch[:i]+ch[i+1]+ch[i]+ch[i+2:] → swap chaîne</span>
+          <span class="b bp">retourner / return → valeur fonction</span>
+          <span class="b bl">from numpy import * → tableaux</span>
+          <span class="b bm">from random import * → randint</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">made with <span>♥</span> for isra · bonne chance au bac 🌸</div>
+</div>
+
+<script>
+function show(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
